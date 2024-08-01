@@ -33,7 +33,7 @@ var app = builder.Build();
 app.MapGet("/", () => "Hello World!");
 
 app.Run();
-
+````
 ### Basic Structure - ASP.NET Minimal API
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
@@ -45,7 +45,9 @@ app.Run();
 
 List<Item> GetAllItems() => new List<Item> { new Item { Id = 1, Name = "Item1" } };
 void CreateItem(Item newItem) => Console.WriteLine($"Item created: {newItem.Name}");
+````
 
 ### Endpoints, Concepts, and Resources
 ```csharp
 app.MapGet("/items/{id}", (int id) => GetItemById(id) is Item item ? Results
+````
