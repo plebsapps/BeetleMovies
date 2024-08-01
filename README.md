@@ -34,7 +34,9 @@ app.MapGet("/", () => "Hello World!");
 
 app.Run();
 ````
-### Basic Structure - ASP.NET Minimal API
+### Basic Structure - ASP.NET API
+
+```csharp
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
