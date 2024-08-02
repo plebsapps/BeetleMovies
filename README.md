@@ -86,3 +86,23 @@ app.MapGet("/movie", async (
     }
 );  
 ````
+
+### With HTTP Result
+```csharp
+//If the result is OK, send an HTTP 200 OK response along with the entity. If the result is null or zero, send an "HTTP 204 No Content" response.
+app.MapGet("/movie", async ( 
+    BeetleMovieContext context, 
+    [FromHeaderAttribute(Name = "movieName")] string title)
+     => 
+    {
+        var movieEntity = await context.Movies
+                                       .Where(x => x.Title.Contains(title))
+                                       .ToListAsync();
+        
+        if (movieEntity.Count <= 0 || movieEntity == null)
+            return Results.NoContent();
+        else
+            return Results.Ok(movieEntity);        
+    }
+);  
+````
