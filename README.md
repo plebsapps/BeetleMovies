@@ -44,3 +44,6 @@ app.MapGet("/movies", (BeetleMovieContext context) => {
 
 app.Run();
 ````
+
+
+![Postman](https://github.com/plebsapps/BeetleMovies/blob/main/postman.png)
