@@ -8,7 +8,7 @@ builder.Services.AddDbContext<BeetleMovieContext>(
 );   
 var app = builder.Build();
 
-app.MapGet("/", () => "Application ist Start now!");
+app.MapGet("/", () => "Application ist start now!");
 
 app.MapGet("/movie/{number:int}", (BeetleMovieContext context, int number) => {
     return context.Movies.FirstOrDefault(x => x.Id == number);
