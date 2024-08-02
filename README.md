@@ -181,7 +181,7 @@ public class BeetleMovieProfile : Profile
 }
 ```
 
-# Add AutoMapper.Extensions.Microsoft.DependencyInjection
+### Add AutoMapper.Extensions.Microsoft.DependencyInjection
  
  ```csharp
     //Add this Line in BeetleMovies.API.csproj
@@ -189,7 +189,7 @@ public class BeetleMovieProfile : Profile
  ```
 Or add it with NuGet 
 
-# Post Data to Database
+### Post Data to Database
  ```csharp
 app.MapPost("/movies", async (
     BeetleMovieContext context, 
