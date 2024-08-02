@@ -13,6 +13,18 @@ var app = builder.Build();
 
 app.MapGet("/", () => "Application ist start now!");
 
+
+//Async & Await
+app.MapGet("/movie/{number:int}", async (BeetleMovieContext context, int number) => {
+    return await context.Movies.FirstOrDefaultAsync(x => x.Id == number);
+});
+
+app.MapGet("/movies", async (BeetleMovieContext context) => {
+    return await context.Movies.ToListAsync();
+});
+
+
+/*
 //You need to use this with Postman and include the title in the Header.
 app.MapGet("/movie", 
     (BeetleMovieContext context, [FromHeaderAttribute(Name = "X-CUSTOM_TITEL")] string title)
@@ -21,6 +33,7 @@ app.MapGet("/movie",
         return context.Movies.Where(x => x.Title == title).ToList();
     }
 );  
+*/
 
 /*
 app.MapGet("/movie/{number:int}", (BeetleMovieContext context, int number) => {

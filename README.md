@@ -60,3 +60,17 @@ app.MapGet("/movie",
 
 #### Postman app
 ![Postman](https://github.com/plebsapps/BeetleMovies/blob/main/postman.png)
+
+
+### Async & Await
+```csharp
+//Async & Await
+app.MapGet("/movie/{number:int}", async (BeetleMovieContext context, int number) => {
+    return await context.Movies.FirstOrDefaultAsync(x => x.Id == number);
+});
+
+app.MapGet("/movies", async (BeetleMovieContext context) => {
+    return await context.Movies.ToListAsync();
+});
+````
+
