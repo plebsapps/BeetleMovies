@@ -1,6 +1,5 @@
 using System.Reflection.Metadata.Ecma335;
 using BeetleMovies.API;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
