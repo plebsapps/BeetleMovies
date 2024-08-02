@@ -106,3 +106,40 @@ app.MapGet("/movies", async Task<Results<NoContent, Ok<List<Movie>>>> (
     }
 );  
 ````
+
+### DTO files
+In ASP.NET, DTO files (Data Transfer Objects) are special classes used to transfer data between different layers of an application.
+
+```csharp
+public class DirectorDTO
+{
+    public int Id { get; set; }
+    public required string Name { get; set; }
+    public int MovieId { get; set; }
+}
+
+public class MovieDTO
+{
+    public int Id { get; set; }
+    public required string Title { get; set; }
+    public int Year { get; set; }
+    public double Rating { get; set; }
+}
+
+public class MovieForCreatingDTO
+{
+    [Required]
+    [StringLength(100, MinimumLength = 3)]
+    public required string Title { get; set; }
+    public int Year { get; set; }
+    public double Rating { get; set; }
+}
+
+public class MovieForUpdatingDTO
+{
+    public int Id { get; set; }
+    public required string Title { get; set; }
+    public int Year { get; set; }
+    public double Rating { get; set; }
+}
+```
