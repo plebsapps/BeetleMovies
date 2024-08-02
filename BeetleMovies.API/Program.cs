@@ -13,7 +13,18 @@ var app = builder.Build();
 
 app.MapGet("/", () => "Application ist start now!");
 
+//Use this asynchronously if you don't know the title of the movie. Remember to use Postman to send the request with the title in the Header.
+app.MapGet("/movie", async ( 
+    BeetleMovieContext context, 
+    [FromHeaderAttribute(Name = "movieName")] string title)
+     => 
+    {
+        return await context.Movies.Where(x => x.Title.Contains(title)).ToListAsync();
+    }
+);  
 
+
+/*
 //Async & Await
 app.MapGet("/movie/{number:int}", async (BeetleMovieContext context, int number) => {
     return await context.Movies.FirstOrDefaultAsync(x => x.Id == number);
@@ -22,7 +33,7 @@ app.MapGet("/movie/{number:int}", async (BeetleMovieContext context, int number)
 app.MapGet("/movies", async (BeetleMovieContext context) => {
     return await context.Movies.ToListAsync();
 });
-
+*/
 
 /*
 //You need to use this with Postman and include the title in the Header.
@@ -50,4 +61,7 @@ app.MapGet("/movies", (BeetleMovieContext context) => {
     return context.Movies;
 });
 */
+
+
+
 app.Run();

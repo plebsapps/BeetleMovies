@@ -74,3 +74,15 @@ app.MapGet("/movies", async (BeetleMovieContext context) => {
 });
 ````
 
+### With Where and Contains
+```csharp
+//Use this asynchronously if you don't know the title of the movie. Remember to use Postman to send the request with the title in the Header.
+app.MapGet("/movie", async ( 
+    BeetleMovieContext context, 
+    [FromHeaderAttribute(Name = "movieName")] string title)
+     => 
+    {
+        return await context.Movies.Where(x => x.Title.Contains(title)).ToListAsync();
+    }
+);  
+````
