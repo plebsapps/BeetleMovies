@@ -13,7 +13,7 @@ var app = builder.Build();
 
 app.MapGet("/", () => "Application ist start now!");
 
-//You have to use like Postman to open this....
+//You need to use this with Postman and include the title in the Header.
 app.MapGet("/movie", 
     (BeetleMovieContext context, [FromHeaderAttribute(Name = "X-CUSTOM_TITEL")] string title)
      => 
@@ -21,9 +21,6 @@ app.MapGet("/movie",
         return context.Movies.Where(x => x.Title == title).ToList();
     }
 );  
-
-
-
 
 /*
 app.MapGet("/movie/{number:int}", (BeetleMovieContext context, int number) => {

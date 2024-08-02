@@ -45,5 +45,18 @@ app.MapGet("/movies", (BeetleMovieContext context) => {
 app.Run();
 ````
 
+### Introduction to ASP.NET
+```csharp
+//You need to use this with Postman and include the title in the Header.
+app.MapGet("/movie", 
+    (BeetleMovieContext context, [FromHeaderAttribute(Name = "X-CUSTOM_TITEL")] string title)
+     => 
+    {
+        return context.Movies.Where(x => x.Title == title).ToList();
+    }
+);  
+````
+#### See link: https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0
 
+#### Postman app
 ![Postman](https://github.com/plebsapps/BeetleMovies/blob/main/postman.png)
