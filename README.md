@@ -1,4 +1,4 @@
-# ASP.NET - Creating Micro-Services APIs with ASP.NET Core
+# Creating Micro-Services APIs with ASP.NET Core
 
 ## Overview
 This repository provides an example of how to create APIs using ASP.NET Core. The API approach simplifies the process of building web APIs by reducing the boilerplate code and focusing on the essentials.
@@ -111,6 +111,7 @@ app.MapGet("/movies", async Task<Results<NoContent, Ok<List<Movie>>>> (
 In ASP.NET, DTO files (Data Transfer Objects) are special classes used to transfer data between different layers of an application.
 
 ```csharp
+
 public class DirectorDTO
 {
     public int Id { get; set; }
@@ -143,3 +144,70 @@ public class MovieForUpdatingDTO
     public double Rating { get; set; }
 }
 ```
+
+### Profiles
+In ASP.NET, "Profiles" refer to a feature that allows storing and managing user-specific data. This functionality is mainly used in connection with user profiles in web applications.
+
+
+```csharp
+.... 
+builder.Services.AddDbContext<BeetleMovieContext>( 
+    o => o.UseSqlite ( builder.Configuration["ConnectionStrings:BeetleMovieStr"] )
+);   
+
+//It is very Importen to add this betwen this lines in Programm.cs the AutoMapper dont found .. Profile in class BeetleMovieProfile 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+var app = builder.Build();
+
+```
+
+```csharp
+using AutoMapper;
+
+namespace BeetleMovies.API;
+
+public class BeetleMovieProfile : Profile
+{
+  public BeetleMovieProfile()
+  {
+    CreateMap<Movie, MovieDTO>().ReverseMap();
+    CreateMap<Movie, MovieForCreatingDTO>().ReverseMap();
+    CreateMap<Movie, MovieForUpdatingDTO>().ReverseMap();
+    CreateMap<Director, DirectorDTO>()
+      .ForMember(d => d.MovieId,
+                 o => o.MapFrom(d => d.Movies.First().Id));
+  }
+}
+```
+
+# Add AutoMapper.Extensions.Microsoft.DependencyInjection
+ 
+ ```csharp
+    //Add this Line in BeetleMovies.API.csproj
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+ ```
+Or add it with NuGet 
+
+# Post Data to Database
+ ```csharp
+app.MapPost("/movies", async (
+    BeetleMovieContext context, 
+    IMapper mapper,
+    [FromBody]MovieForCreatingDTO movieForCreatingDTO) =>
+    {
+        var movie = mapper.Map<Movie>(movieForCreatingDTO);
+        context.Add(movie);
+        await context.SaveChangesAsync();
+
+        var movieToReturn = mapper.Map<MovieDTO>(movie);
+        return TypedResults.Ok(movieToReturn);
+    });  
+
+app.Run();
+ ```
+
+
+
+
+

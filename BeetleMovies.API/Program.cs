@@ -1,26 +1,29 @@
-using System.Reflection.Metadata.Ecma335;
+using AutoMapper;
 using BeetleMovies.API;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<BeetleMovieContext>( 
     o => o.UseSqlite ( builder.Configuration["ConnectionStrings:BeetleMovieStr"] )
 );   
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 var app = builder.Build();
 
 app.MapGet("/", () => "Application ist start now!");
 
-//If the result is OK, send an HTTP 200 OK response along with the entity. If the result is null or zero, send an "HTTP 204 No Content" response.
 app.MapGet("/movies", async Task<Results<NoContent, Ok<List<Movie>>>> ( 
     BeetleMovieContext context, 
-    [FromHeaderAttribute(Name = "movieName")] string title)
-     => 
+    [FromHeaderAttribute(Name = "movieName")] string? title
+    ) => 
     {
         var movieEntity = await context.Movies
-                                       .Where(x => title == null || x.Title.Contains(title))
+                                       .Where(x => title == null || x.Title.ToLower().Contains(title.ToLower()))
                                        .ToListAsync();
         
         if (movieEntity.Count <= 0 || movieEntity == null)
@@ -29,6 +32,21 @@ app.MapGet("/movies", async Task<Results<NoContent, Ok<List<Movie>>>> (
             return TypedResults.Ok(movieEntity);        
     }
 );  
+
+app.MapPost("/movies", async (
+    BeetleMovieContext context, 
+    IMapper mapper,
+    [FromBody]MovieForCreatingDTO movieForCreatingDTO) =>
+    {
+        var movie = mapper.Map<Movie>(movieForCreatingDTO);
+        context.Add(movie);
+        await context.SaveChangesAsync();
+
+        var movieToReturn = mapper.Map<MovieDTO>(movie);
+        return TypedResults.Ok(movieToReturn);
+    });  
+
+app.Run();
 
 /*
 //Use this asynchronously if you don't know the title of the movie. Remember to use Postman to send the request with the title in the Header.
@@ -79,7 +97,3 @@ app.MapGet("/movies", (BeetleMovieContext context) => {
     return context.Movies;
 });
 */
-
-
-
-app.Run();
