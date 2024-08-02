@@ -1,6 +1,7 @@
 using System.Reflection.Metadata.Ecma335;
 using BeetleMovies.API;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,19 +15,19 @@ var app = builder.Build();
 app.MapGet("/", () => "Application ist start now!");
 
 //If the result is OK, send an HTTP 200 OK response along with the entity. If the result is null or zero, send an "HTTP 204 No Content" response.
-app.MapGet("/movie", async ( 
+app.MapGet("/movies", async Task<Results<NoContent, Ok<List<Movie>>>> ( 
     BeetleMovieContext context, 
     [FromHeaderAttribute(Name = "movieName")] string title)
      => 
     {
         var movieEntity = await context.Movies
-                                       .Where(x => x.Title.Contains(title))
+                                       .Where(x => title == null || x.Title.Contains(title))
                                        .ToListAsync();
         
         if (movieEntity.Count <= 0 || movieEntity == null)
-            return Results.NoContent();
+            return TypedResults.NoContent();
         else
-            return Results.Ok(movieEntity);        
+            return TypedResults.Ok(movieEntity);        
     }
 );  
 
