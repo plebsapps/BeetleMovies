@@ -68,6 +68,17 @@ app.MapPost("/movie", async (
         return TypedResults.CreatedAtRoute(movieToReturn,"GetMovies", new { id = movieToReturn.Id });
     });
 
+//Get async .../movie/[id]/directors the Directors of a movie
+app.MapGet("/movie/{movieId:int}/directors", async (
+    BeetleMovieContext context, 
+    IMapper mapper,
+    int movieId) =>
+    {
+        return mapper.Map<IEnumerable<DirectorDTO>>((await context.Movies
+                            .Include(movie => movie.Directors)  
+                            .FirstOrDefaultAsync(movie => movie.Id == movieId))?.Directors);
+    });
+
 //GET async .../movies  from Header -> movieName?[String]
 app.MapGet("/movies", async Task<Results<NoContent, Ok<List<Movie>>>> ( 
     BeetleMovieContext context, 

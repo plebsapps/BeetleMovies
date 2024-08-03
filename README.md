@@ -304,3 +304,17 @@ app.MapDelete("/movie/{id:int}", async Task<Results<NotFound, NoContent>>(
         return TypedResults.NoContent();
     });  
 ```
+### Get List of the Directors from a Movie
+
+```csharp
+//Get async .../movie/[id]/directors the Directors of a movie
+app.MapGet("/movie/{movieId:int}/directors", async (
+    BeetleMovieContext context, 
+    IMapper mapper,
+    int movieId) =>
+    {
+        return mapper.Map<IEnumerable<DirectorDTO>>((await context.Movies
+                            .Include(movie => movie.Directors)  
+                            .FirstOrDefaultAsync(movie => movie.Id == movieId))?.Directors);
+    });
+```
