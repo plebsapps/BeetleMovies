@@ -336,14 +336,14 @@ And all **app.MapDelete("/movie/{id:int}"....**  to **movieGroupWithId.MapDelete
 app.RegisterMoviesEndpoints();
 app.RegisterDirectorsEndpoints();
 ```
-## Create *EndpointRouteBuilderExtensions* class
+#### Create *EndpointRouteBuilderExtensions* class
 This are some stacic Methode of EndpointRouteBuilderExtensions Class
 
-## Create *DirectorsHandlers* class 
+#### Create *DirectorsHandlers* class 
 There you can find all static Methoden of DirectorsHandlers class
 GetDirectorsAsync... 
 
-## Create *MoviesHandlers* class
+#### Create *MoviesHandlers* class
 This section includes all static methods of the MoviesHandlers class
     moviesGroups.MapGet(...
     moviesGroups.MapPost(...
@@ -351,4 +351,52 @@ This section includes all static methods of the MoviesHandlers class
     moviesGroupsWithId.MapPut(...
     moviesGroupsWithId.MapDelete(...
 
+### Errors 
+To see the errors, you need to set "ASPNETCORE_ENVIRONMENT": "Development" in the launchSettings.json file. Normally, you set "ASPNETCORE_ENVIRONMENT" to "Production".
 
+```csharp
+  "profiles": {    
+    "https": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:5000;http://localhost:5001",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+```
+
+```csharp
+    ....
+      "ASPNETCORE_ENVIRONMENT": "Production"
+```
+
+### Logging
+In this method, you can see that the logger is active (ILogger<MovieDTO> logger). You can write messages like Debug:
+*logger.LogDebug($"Movie not found. Param: {title}");* or like this: *logger.LogDebug($"Movie not found. Param: {title}");*
+
+Here the method:
+```csharp
+public static async Task<Results<NoContent, Ok<IEnumerable<MovieDTO>>>> GetMoviesAsync(
+    BeetleMovieContext context,
+    IMapper mapper,
+    ILogger<MovieDTO> logger,
+    [FromQuery(Name = "movieName")] string? title)
+{
+    var movieEntity = await context.Movies
+                                  .Where(x => title == null ||
+                                          x.Title.ToLower().Contains(title.ToLower()))
+                                  .ToListAsync();
+
+    if (movieEntity == null || movieEntity.Count <= 0)
+    {
+        logger.LogDebug($"Movie not found. Param: {title}");
+        return TypedResults.NoContent();
+    }
+    else
+    {
+        logger.LogInformation($"Movie found. Return: {movieEntity[0].Title}");
+        return TypedResults.Ok(mapper.Map<IEnumerable<MovieDTO>>(movieEntity));
+    }
+}

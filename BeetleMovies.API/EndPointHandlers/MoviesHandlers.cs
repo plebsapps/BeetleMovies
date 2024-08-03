@@ -20,7 +20,7 @@ public static class MoviesHandlers
 
     if (movieEntity.Count <= 0 || movieEntity == null)
     {
-      logger.LogInformation($"Movie not found. Param: {title}");
+      logger.LogDebug($"Movie not found. Param: {title}");
       return TypedResults.NoContent();
     }
     else
