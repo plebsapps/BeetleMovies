@@ -27,7 +27,8 @@ app.MapPost("/movie", async (
         await context.SaveChangesAsync();
 
         var movieToReturn = mapper.Map<MovieDTO>(movie);
-        return TypedResults.Created("", movieToReturn);
+        
+        return TypedResults.CreatedAtRoute(movieToReturn,"GetMovies", new { id = movieToReturn.Id });
     });  
 
 //GET async .../movies  from Header -> movieName?[String]
@@ -60,10 +61,13 @@ app.MapGet("/movie", async (
 );  
 
 //GET async .../movie/[int] from URL
-//Get the movie from Number write the Number in the URL 
-app.MapGet("/movie/{number:int}", async (BeetleMovieContext context, int number) =>
+//Get the movie from Id write the Id in the URL 
+app.MapGet("/movie/{id:int}", async (
+    BeetleMovieContext context, 
+    IMapper mapper,
+    int id) =>
     {
-        return await context.Movies.FirstOrDefaultAsync(x => x.Id == number);
-    });
+        return mapper.Map<MovieDTO>(await context.Movies.FirstOrDefaultAsync(x => x.Id == id)); 
+    }).WithName("GetMovies");
 
 app.Run();

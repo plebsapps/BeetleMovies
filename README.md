@@ -207,7 +207,57 @@ app.MapPost("/movies", async (
 app.Run();
  ```
 
+### Post Data to Database with return URL (link to the new Movie) in Header
+ ```csharp
+//Post async ../movie send movie as ROW JSON 
+app.MapPost("/movie", async (
+    BeetleMovieContext context, 
+    LinkGenerator linkGenerator,
+    HttpContext httpContext,
+    IMapper mapper,
+    [FromBody]MovieForCreatingDTO movieForCreatingDTO) =>
+    {
+        var movie = mapper.Map<Movie>(movieForCreatingDTO);
+        context.Add(movie);
+        await context.SaveChangesAsync();
 
+        var movieToReturn = mapper.Map<MovieDTO>(movie);
+        var linkToReturn = linkGenerator.GetUriByName(httpContext, "GetMovies", new{ id = movieToReturn.Id});
+        
+        return TypedResults.Created(linkToReturn, movieToReturn);
+    });  
 
+//VERY Importen a funktion with Name ""GetMovies""
 
+//GET async .../movie/[int] from URL
+//Get the movie from Id write the Id in the URL 
+app.MapGet("/movie/{id:int}", async (
+    BeetleMovieContext context, 
+    IMapper mapper,
+    int id) =>
+    {
+        return mapper.Map<MovieDTO>(await context.Movies.FirstOrDefaultAsync(x => x.Id == id)); 
+    }).WithName("GetMovies");
 
+ ```
+
+### Post Data to Database with return URL in Header using "CreatedAtRoute"
+This will be the better way because smallerCode are better Code *KISS*
+
+The KISS principle in coding stands for "Keep It Simple, Stupid." It means that when you're writing code, you should strive for simplicity and avoid unnecessary complexity. Your code should be as straightforward and easy to understand as possible
+```csharp
+//Post async ../movie send movie as ROW JSON 
+app.MapPost("/movie", async (
+    BeetleMovieContext context, 
+    IMapper mapper,
+    [FromBody]MovieForCreatingDTO movieForCreatingDTO) =>
+    {
+        var movie = mapper.Map<Movie>(movieForCreatingDTO);
+        context.Add(movie);
+        await context.SaveChangesAsync();
+
+        var movieToReturn = mapper.Map<MovieDTO>(movie);
+        
+        return TypedResults.CreatedAtRoute(movieToReturn,"GetMovies", new { id = movieToReturn.Id });
+    });  
+```
