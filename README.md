@@ -290,11 +290,10 @@ app.MapPut("/movie/{id:int}", async Task<Results<NotFound, Ok>>(
 //Delete async ../movie/[Id] 
 app.MapDelete("/movie/{id:int}", async Task<Results<NotFound, NoContent>>(
     BeetleMovieContext context, 
-    int id,
-    [FromBody] MovieForUpdatingDTO movieForUpdateingDTO    
+    int id    
     ) =>
     {
-        var movie = await context.Movies.SingleOrDefaultAsync(x => x.Id == id);
+        var movie = await context.Movies.FirstOrDefaultAsync(x => x.Id == id);
         if(movie == null)  
             return TypedResults.NotFound();
 
@@ -318,3 +317,17 @@ app.MapGet("/movie/{movieId:int}/directors", async (
                             .FirstOrDefaultAsync(movie => movie.Id == movieId))?.Directors);
     });
 ```
+
+## Route Handlers in Minimal API apps
+https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/route-handlers?view=aspnetcore-8.0
+
+### Movie Group
+```csharp
+var movieGroup = app.MapGroup("/movie");
+var moviesGroup = app.MapGroup("/movies");
+var movieGroupWithId = movieGroup.MapGroup("/{id:int}");
+var directorsGroup = movieGroupWithId.MapGroup("/directors");
+```
+
+And all **app.MapDelete("/movie/{id:int}"....**  to **movieGroupWithId.MapDelete(""....**
+

@@ -16,14 +16,19 @@ var app = builder.Build();
 
 app.MapGet("/", () => "Application is start now!");
 
+var movieGroup = app.MapGroup("/movie");
+var moviesGroup = app.MapGroup("/movies");
+var movieGroupWithId = movieGroup.MapGroup("/{id:int}");
+var directorsGroup = movieGroupWithId.MapGroup("/directors");
+
+
 //Delete async ../movie/[Id] 
-app.MapDelete("/movie/{id:int}", async Task<Results<NotFound, NoContent>>(
+movieGroupWithId.MapDelete("", async Task<Results<NotFound, NoContent>>(
     BeetleMovieContext context, 
-    int id,
-    [FromBody] MovieForUpdatingDTO movieForUpdateingDTO    
+    int id    
     ) =>
     {
-        var movie = await context.Movies.SingleOrDefaultAsync(x => x.Id == id);
+        var movie = await context.Movies.FirstOrDefaultAsync(x => x.Id == id);
         if(movie == null)  
             return TypedResults.NotFound();
 
@@ -35,7 +40,7 @@ app.MapDelete("/movie/{id:int}", async Task<Results<NotFound, NoContent>>(
 
 
 //Put async ../movie/[Id] send movie as ROW JSON 
-app.MapPut("/movie/{id:int}", async Task<Results<NotFound, Ok>>(
+movieGroupWithId.MapPut("", async Task<Results<NotFound, Ok>>(
     BeetleMovieContext context, 
     IMapper mapper,
     int id,
@@ -54,7 +59,7 @@ app.MapPut("/movie/{id:int}", async Task<Results<NotFound, Ok>>(
 
 
 //Post async ../movie send movie as ROW JSON 
-app.MapPost("/movie", async (
+movieGroup.MapPost("", async (
     BeetleMovieContext context, 
     IMapper mapper,
     [FromBody]MovieForCreatingDTO movieForCreatingDTO) =>
@@ -69,18 +74,18 @@ app.MapPost("/movie", async (
     });
 
 //Get async .../movie/[id]/directors the Directors of a movie
-app.MapGet("/movie/{movieId:int}/directors", async (
+directorsGroup.MapGet("", async (
     BeetleMovieContext context, 
     IMapper mapper,
-    int movieId) =>
+    int id) =>
     {
         return mapper.Map<IEnumerable<DirectorDTO>>((await context.Movies
                             .Include(movie => movie.Directors)  
-                            .FirstOrDefaultAsync(movie => movie.Id == movieId))?.Directors);
+                            .FirstOrDefaultAsync(movie => movie.Id == id))?.Directors);
     });
 
 //GET async .../movies  from Header -> movieName?[String]
-app.MapGet("/movies", async Task<Results<NoContent, Ok<List<Movie>>>> ( 
+moviesGroup.MapGet("", async Task<Results<NoContent, Ok<List<Movie>>>> ( 
     BeetleMovieContext context, 
     [FromHeaderAttribute(Name = "movieName")] string? title
     ) => 
@@ -99,7 +104,7 @@ app.MapGet("/movies", async Task<Results<NoContent, Ok<List<Movie>>>> (
 
 //GET async .../movie  from Header -> movieName?[String]
 //If you don't know the title of the movie. Remember to use Postman to send the request with the title in the Header.
-app.MapGet("/movie", async ( 
+movieGroup.MapGet("", async ( 
     BeetleMovieContext context, 
     [FromHeaderAttribute(Name = "movieName")] string title)
      => 
@@ -110,7 +115,7 @@ app.MapGet("/movie", async (
 
 //GET async .../movie/[int] from URL
 //Get the movie from Id write the Id in the URL 
-app.MapGet("/movie/{id:int}", async (
+movieGroupWithId.MapGet("", async (
     BeetleMovieContext context, 
     IMapper mapper,
     int id) =>
