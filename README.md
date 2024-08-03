@@ -1,7 +1,7 @@
 # Creating Micro-Services APIs with ASP.NET Core
 
 ## Overview
-This repository provides an example of how to create APIs using ASP.NET Core. The API approach simplifies the process of building web APIs by reducing the boilerplate code and focusing on the essentials.
+This repository provides an example of how to create APIs using ASP.NET Core. **This is a working Repo for learnig ASP.net.** The API approach simplifies the process of building web APIs by reducing the boilerplate code and focusing on the essentials.
 
 ## Starting an ASP.NET App in the Terminal in Visual Studio Code
 In the Terminal, navigate to the API directory, for example, C:\Dev\.net_ASP\BeetleMovies\BeetleMovies.API>, and type "dotnet watch run"

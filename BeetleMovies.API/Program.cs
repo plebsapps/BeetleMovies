@@ -3,7 +3,6 @@ using BeetleMovies.API;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,25 +14,10 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Application ist start now!");
+app.MapGet("/", () => "Application is start now!");
 
-app.MapGet("/movies", async Task<Results<NoContent, Ok<List<Movie>>>> ( 
-    BeetleMovieContext context, 
-    [FromHeaderAttribute(Name = "movieName")] string? title
-    ) => 
-    {
-        var movieEntity = await context.Movies
-                                       .Where(x => title == null || x.Title.ToLower().Contains(title.ToLower()))
-                                       .ToListAsync();
-        
-        if (movieEntity.Count <= 0 || movieEntity == null)
-            return TypedResults.NoContent();
-        else
-            return TypedResults.Ok(movieEntity);        
-    }
-);  
-
-app.MapPost("/movies", async (
+//Post async ../movie send movie as ROW JSON 
+app.MapPost("/movie", async (
     BeetleMovieContext context, 
     IMapper mapper,
     [FromBody]MovieForCreatingDTO movieForCreatingDTO) =>
@@ -43,13 +27,29 @@ app.MapPost("/movies", async (
         await context.SaveChangesAsync();
 
         var movieToReturn = mapper.Map<MovieDTO>(movie);
-        return TypedResults.Ok(movieToReturn);
+        return TypedResults.Created("", movieToReturn);
     });  
 
-app.Run();
+//GET async .../movies  from Header -> movieName?[String]
+app.MapGet("/movies", async Task<Results<NoContent, Ok<List<Movie>>>> ( 
+    BeetleMovieContext context, 
+    [FromHeaderAttribute(Name = "movieName")] string? title
+    ) => 
+    {
+        var movieEntity = await context.Movies
+                                       .Where(x => title == null || 
+                                              x.Title.ToLower().Contains(title.ToLower()))
+                                       .ToListAsync();
+        
+        if (movieEntity.Count <= 0 || movieEntity == null)
+            return TypedResults.NoContent();
+        else
+            return TypedResults.Ok(movieEntity);        
+    }
+);  
 
-/*
-//Use this asynchronously if you don't know the title of the movie. Remember to use Postman to send the request with the title in the Header.
+//GET async .../movie  from Header -> movieName?[String]
+//If you don't know the title of the movie. Remember to use Postman to send the request with the title in the Header.
 app.MapGet("/movie", async ( 
     BeetleMovieContext context, 
     [FromHeaderAttribute(Name = "movieName")] string title)
@@ -58,42 +58,12 @@ app.MapGet("/movie", async (
         return await context.Movies.Where(x => x.Title.Contains(title)).ToListAsync();
     }
 );  
-*/
 
-/*
-//Async & Await
-app.MapGet("/movie/{number:int}", async (BeetleMovieContext context, int number) => {
-    return await context.Movies.FirstOrDefaultAsync(x => x.Id == number);
-});
-
-app.MapGet("/movies", async (BeetleMovieContext context) => {
-    return await context.Movies.ToListAsync();
-});
-*/
-
-/*
-//You need to use this with Postman and include the title in the Header.
-app.MapGet("/movie", 
-    (BeetleMovieContext context, [FromHeaderAttribute(Name = "X-CUSTOM_TITEL")] string title)
-     => 
+//GET async .../movie/[int] from URL
+//Get the movie from Number write the Number in the URL 
+app.MapGet("/movie/{number:int}", async (BeetleMovieContext context, int number) =>
     {
-        return context.Movies.Where(x => x.Title == title).ToList();
-    }
-);  
-*/
+        return await context.Movies.FirstOrDefaultAsync(x => x.Id == number);
+    });
 
-/*
-app.MapGet("/movie/{number:int}", (BeetleMovieContext context, int number) => {
-    return context.Movies.FirstOrDefault(x => x.Id == number);
-});
-
-app.MapGet("/movie/{title}", (BeetleMovieContext context, string title) => {
-
-    Console.WriteLine("Das ist Title in Lowerletter: " + title);    
-    return context.Movies.FirstOrDefault(x => x.Title.ToLower() == title.ToLower());    
-});
-
-app.MapGet("/movies", (BeetleMovieContext context) => {
-    return context.Movies;
-});
-*/
+app.Run();
