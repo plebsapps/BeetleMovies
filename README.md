@@ -261,3 +261,46 @@ app.MapPost("/movie", async (
         return TypedResults.CreatedAtRoute(movieToReturn,"GetMovies", new { id = movieToReturn.Id });
     });  
 ```
+
+### PUT Update Data in Database with return OK or NotFound
+
+```csharp
+//Put async ../movie/[Id] send movie as ROW JSON 
+app.MapPut("/movie/{id:int}", async Task<Results<NotFound, Ok>>(
+    BeetleMovieContext context, 
+    IMapper mapper,
+    int id,
+    [FromBody] MovieForUpdatingDTO movieForUpdateingDTO    
+    ) =>
+    {
+        var movie = await context.Movies.SingleOrDefaultAsync(x => x.Id == id);
+        if(movie == null)  
+            return  TypedResults.NotFound();
+
+        mapper.Map(movieForUpdateingDTO, movie);
+        await context.SaveChangesAsync();
+
+        return TypedResults.Ok();
+    });  
+```
+
+### Delete Data in Database with return NoContent or NotFound
+
+```csharp
+//Delete async ../movie/[Id] 
+app.MapDelete("/movie/{id:int}", async Task<Results<NotFound, NoContent>>(
+    BeetleMovieContext context, 
+    int id,
+    [FromBody] MovieForUpdatingDTO movieForUpdateingDTO    
+    ) =>
+    {
+        var movie = await context.Movies.SingleOrDefaultAsync(x => x.Id == id);
+        if(movie == null)  
+            return TypedResults.NotFound();
+
+        context.Movies.Remove(movie);
+        await context.SaveChangesAsync();
+
+        return TypedResults.NoContent();
+    });  
+```

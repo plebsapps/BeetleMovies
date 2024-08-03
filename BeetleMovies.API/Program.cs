@@ -16,6 +16,43 @@ var app = builder.Build();
 
 app.MapGet("/", () => "Application is start now!");
 
+//Delete async ../movie/[Id] 
+app.MapDelete("/movie/{id:int}", async Task<Results<NotFound, NoContent>>(
+    BeetleMovieContext context, 
+    int id,
+    [FromBody] MovieForUpdatingDTO movieForUpdateingDTO    
+    ) =>
+    {
+        var movie = await context.Movies.SingleOrDefaultAsync(x => x.Id == id);
+        if(movie == null)  
+            return TypedResults.NotFound();
+
+        context.Movies.Remove(movie);
+        await context.SaveChangesAsync();
+
+        return TypedResults.NoContent();
+    });  
+
+
+//Put async ../movie/[Id] send movie as ROW JSON 
+app.MapPut("/movie/{id:int}", async Task<Results<NotFound, Ok>>(
+    BeetleMovieContext context, 
+    IMapper mapper,
+    int id,
+    [FromBody] MovieForUpdatingDTO movieForUpdateingDTO    
+    ) =>
+    {
+        var movie = await context.Movies.SingleOrDefaultAsync(x => x.Id == id);
+        if(movie == null)  
+            return TypedResults.NotFound();
+
+        mapper.Map(movieForUpdateingDTO, movie);
+        await context.SaveChangesAsync();
+
+        return TypedResults.Ok();
+    });  
+
+
 //Post async ../movie send movie as ROW JSON 
 app.MapPost("/movie", async (
     BeetleMovieContext context, 
@@ -29,7 +66,7 @@ app.MapPost("/movie", async (
         var movieToReturn = mapper.Map<MovieDTO>(movie);
         
         return TypedResults.CreatedAtRoute(movieToReturn,"GetMovies", new { id = movieToReturn.Id });
-    });  
+    });
 
 //GET async .../movies  from Header -> movieName?[String]
 app.MapGet("/movies", async Task<Results<NoContent, Ok<List<Movie>>>> ( 
