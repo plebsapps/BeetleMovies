@@ -331,3 +331,24 @@ var directorsGroup = movieGroupWithId.MapGroup("/directors");
 
 And all **app.MapDelete("/movie/{id:int}"....**  to **movieGroupWithId.MapDelete(""....**
 
+### Simplify *Program.cs*
+```csharp
+app.RegisterMoviesEndpoints();
+app.RegisterDirectorsEndpoints();
+```
+## Create *EndpointRouteBuilderExtensions* class
+This are some stacic Methode of EndpointRouteBuilderExtensions Class
+
+## Create *DirectorsHandlers* class 
+There you can find all static Methoden of DirectorsHandlers class
+GetDirectorsAsync... 
+
+## Create *MoviesHandlers* class
+This section includes all static methods of the MoviesHandlers class
+    moviesGroups.MapGet(...
+    moviesGroups.MapPost(...
+    moviesGroupsWithId.MapGet(...
+    moviesGroupsWithId.MapPut(...
+    moviesGroupsWithId.MapDelete(...
+
+
