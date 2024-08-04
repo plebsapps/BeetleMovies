@@ -16,13 +16,11 @@ public static class EndpointRouteBuilderExtensions
 
     moviesGroupsWithId.MapGet("", MoviesHandlers.GetMoviesById).WithName("GetMovies");
 
-    moviesGroupsWithId.MapPut("", MoviesHandlers.UpdateMoviesAsync)
-      .AddEndpointFilter(new PerfectMoviesAreLockedFilter(2))
-      .AddEndpointFilter(new PerfectMoviesAreLockedFilter(5));
+    moviesGroupsWithId.MapPut("", MoviesHandlers.UpdateMoviesAsync);
 
     moviesGroupsWithId.MapDelete("", MoviesHandlers.DeleteMoviesAsync)
-      .AddEndpointFilter(new PerfectMoviesAreLockedFilter(2))
-      .AddEndpointFilter(new PerfectMoviesAreLockedFilter(5));
+       .AddEndpointFilter<LogNotFoundResponseFilter>();
+    
   }
 
   public static void RegisterDirectorsEndpoints(this IEndpointRouteBuilder endpointRouteBuilder)
