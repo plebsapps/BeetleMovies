@@ -558,5 +558,33 @@ This error will show:
 }
 
 
+### Adding Swagger
 
+Add in BeetleMovies.API.csproj
+```csharp
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+```
+
+Add in Program.cs
+```csharp
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddEndpointsApiExplorer();     //Add Swagger
+builder.Services.AddSwaggerGen();               //Add Swagger
+
+var app = builder.Build();
+
+app.UseSwagger();       //Add Swagger
+app.UseSwaggerUI();     //Add Swagger
+
+```
+
+Add in launchSettings.json
+```csharp
+    ...
+      "launchBrowser": true,
+    "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:5000;http://localhost:5001",
+    ...
+```
 
