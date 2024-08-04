@@ -15,7 +15,9 @@ public static class EndpointRouteBuilderExtensions
 
     moviesGroupsWithId.MapPut("", MoviesHandlers.UpdateMoviesAsync);
 
-    moviesGroupsWithId.MapDelete("", MoviesHandlers.DeleteMoviesAsync);
+    moviesGroupsWithId.MapDelete("", MoviesHandlers.DeleteMoviesAsync)
+      .AddEndpointFilter(new PerfectMoviesAreLockedFilter(2))
+      .AddEndpointFilter(new PerfectMoviesAreLockedFilter(5));
   }
 
   public static void RegisterDirectorsEndpoints(this IEndpointRouteBuilder endpointRouteBuilder)
