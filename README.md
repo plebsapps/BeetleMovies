@@ -452,7 +452,20 @@ public class PerfectMoviesAreLockedFilter : IEndpointFilter
 ```
 
 ```csharp
+    moviesGroupsWithId.MapPut("", MoviesHandlers.UpdateMoviesAsync)
+      .AddEndpointFilter(new PerfectMoviesAreLockedFilter(2))
+      .AddEndpointFilter(new PerfectMoviesAreLockedFilter(5));
+
     moviesGroupsWithId.MapDelete("", MoviesHandlers.DeleteMoviesAsync)
+      .AddEndpointFilter(new PerfectMoviesAreLockedFilter(2))
+      .AddEndpointFilter(new PerfectMoviesAreLockedFilter(5));
+```
+
+#### Filter Grouping
+A better approach is to use the filter in different places by setting the filter in the group like this:
+
+```csharp
+    var moviesGroupsWithIdFilters = moviesGroupsWithId 
       .AddEndpointFilter(new PerfectMoviesAreLockedFilter(2))
       .AddEndpointFilter(new PerfectMoviesAreLockedFilter(5));
 ```
