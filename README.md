@@ -465,7 +465,7 @@ public class PerfectMoviesAreLockedFilter : IEndpointFilter
 A better approach is to use the filter in different places by setting the filter in the group like this:
 
 ```csharp
-    var moviesGroupsWithIdFilters = moviesGroupsWithId 
+    var moviesGroupsWithIdFilters = entpointRouteBuilder.MapGroup("/movies/{moviesId:int}") 
       .AddEndpointFilter(new PerfectMoviesAreLockedFilter(2))
       .AddEndpointFilter(new PerfectMoviesAreLockedFilter(5));
 ```
