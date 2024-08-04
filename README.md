@@ -501,3 +501,62 @@ You can see in Terminal the Info:
 
 info: BeetleMovies.API.LogNotFoundResponseFilter[0]
       Resource /movies/55 was not found.
+
+### Validation
+
+Add in BeetleMovies.API.csproj
+```csharp
+       <PackageReference Include="MiniValidation" Version="0.9.1" />
+```
+
+```csharp
+public class MovieForCreatingDTO
+{
+  //Validation
+  [Required]
+  [StringLength(100, MinimumLength = 3)]
+  public required string Title { get; set; }
+  public int Year { get; set; }
+  public double Rating { get; set; }
+}
+```
+
+Class ValidateAnnotationFilter
+```csharp
+public class ValidateAnnotationFilter : IEndpointFilter
+{
+  public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
+  {
+    var movieForCreatingDTO = context.GetArgument<MovieForCreatingDTO>(2);
+
+    if (!MiniValidator.TryValidate(movieForCreatingDTO, out var validationError))
+    {
+      return TypedResults.ValidationProblem(validationError);
+    }
+
+    return await next(context);
+  }
+}
+```
+Edit EndpointRouteBuilderExtensions class
+```csharp
+    moviesGroups.MapPost("", MoviesHandlers.CreateMoviesAsync)
+      .AddEndpointFilter<ValidateAnnotationFilter>();
+
+```
+
+This error will show:
+{
+    "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+    "title": "One or more validation errors occurred.",
+    "status": 400,
+    "errors": {
+        "Title": [
+            "The field Title must be a string with a minimum length of 3 and a maximum length of 100."
+        ]
+    }
+}
+
+
+
+

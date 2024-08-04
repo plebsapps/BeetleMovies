@@ -12,7 +12,8 @@ public static class EndpointRouteBuilderExtensions
 
     moviesGroups.MapGet("", MoviesHandlers.GetMoviesAsync);
 
-    moviesGroups.MapPost("", MoviesHandlers.CreateMoviesAsync);
+    moviesGroups.MapPost("", MoviesHandlers.CreateMoviesAsync)
+      .AddEndpointFilter<ValidateAnnotationFilter>();
 
     moviesGroupsWithId.MapGet("", MoviesHandlers.GetMoviesById).WithName("GetMovies");
 
