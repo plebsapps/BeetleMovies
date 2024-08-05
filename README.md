@@ -504,6 +504,8 @@ info: BeetleMovies.API.LogNotFoundResponseFilter[0]
 
 ### Validation
 
+See https://github.com/DamianEdwards/MiniValidation
+
 Add in BeetleMovies.API.csproj
 ```csharp
        <PackageReference Include="MiniValidation" Version="0.9.1" />
@@ -538,6 +540,7 @@ public class ValidateAnnotationFilter : IEndpointFilter
   }
 }
 ```
+
 Edit EndpointRouteBuilderExtensions class
 ```csharp
     moviesGroups.MapPost("", MoviesHandlers.CreateMoviesAsync)
@@ -588,3 +591,14 @@ Add in launchSettings.json
     ...
 ```
 
+### Authorization and Authentication
+
+And See Video 69 - 73 
+And Read https://learn.microsoft.com/de-de/aspnet/identity/overview/getting-started/introduction-to-aspnet-identity
+
+Coming Sone
+
+### Others 
+
+Minimal APIs overview
+See https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/overview?view=aspnetcore-8.0
